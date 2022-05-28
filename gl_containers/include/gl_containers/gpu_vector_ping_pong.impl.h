@@ -65,54 +65,97 @@ namespace gl_containers {
     }
 
     template<class T>
-    void GpuVectorPingPong<T>::append(
-        gl_classes::HostDeviceBuffer<T>& append,
-        glm::uint append_offset,
-        glm::uint append_count
+    void GpuVectorPingPong<T>::resize(
+        glm::uint new_size,
+        bool download_count
     )
     {
-        count().bind();
-        count().download();
-
-        // debugDownloadData();
-
-        m_programs->copy<T>().use();
+        if (download_count)
         {
-            items().read().bind();
-            items().read().bufferBase(0);
-
-            items().write().bind();
-            items().write().bufferBase(1);
-            items().write().resize(count().buffer[index_count()] + append_count);
-
-            m_programs->copy<T>().offset_in.set(0);
-            m_programs->copy<T>().offset_out.set(0);
+            count().bind();
+            count().download();
         }
-        m_programs->copy<T>().dispatch(
-            count().buffer[index_count()]
-        );
 
-        glm::uint offset_out = count().buffer[index_count()];
+        auto current_size = count().buffer[index_count()];
 
-        count().buffer[index_count()] += append_count;
+        if (new_size == current_size) return;
+
+        bool is_growing = new_size > current_size;
+        bool fits_in_read = new_size <= items().read().size();
+
+        if (is_growing && !fits_in_read)
+        {
+            m_programs->copy<T>().use();
+            {
+                items().read().bind();
+                items().read().bufferBase(0);
+
+                items().write().bind();
+                items().write().bufferBase(1);
+                items().write().resize(new_size);
+
+                m_programs->copy<T>().offset_in.set(0);
+                m_programs->copy<T>().offset_out.set(0);
+            }
+            m_programs->copy<T>().dispatch(
+                count().buffer[index_count()]
+            );
+            items().toggle();
+        }
+
         count().bind();
+        count().buffer[index_count()] = new_size;
         count().upload();
+    }
+    
+    template<class T>
+    void GpuVectorPingPong<T>::grow_by(
+        glm::uint growth_amount, 
+        bool download_count
+    )
+    {
+        if (growth_amount == 0) return;
+        if (download_count)
+        {
+            count().bind();
+            count().download();
+        }
+
+        resize(
+            count().buffer[index_count()] + growth_amount,
+            false
+        );
+    }
+
+    template<class T>
+    void GpuVectorPingPong<T>::append(
+        gl_classes::HostDeviceBuffer<T>& items_data,
+        glm::uint items_offset,
+        glm::uint items_count
+    )
+    {
+        if (items_count == 0) return;
+
+        auto old_size = get_size(true);
+        
+        grow_by(items_count, false);
 
         // debugDownloadData();
+        items().toggle();
 
         m_programs->copy<T>().use();
         {
-            append.bind();
-            append.bufferBase(0);
+            items_data.bind();
+            items_data.bufferBase(0);
 
             items().write().bind();
             items().write().bufferBase(1);
 
-            m_programs->copy<T>().offset_in.set(append_offset);
-            m_programs->copy<T>().offset_out.set(offset_out);
+            m_programs->copy<T>().offset_in.set(items_offset);
+            m_programs->copy<T>().offset_out.set(old_size);
         }
         m_programs->copy<T>().dispatch(
-            append_count
+            items_count
         );
 
         // debugDownloadData();
@@ -120,7 +163,32 @@ namespace gl_containers {
     }
 
     template<class T>
-    void GpuVectorPingPong<T>::debugDownloadData()
+    void GpuVectorPingPong<T>::append_from_cpu(
+        const T* items_data,
+        glm::uint items_offset,
+        glm::uint items_count
+    )
+    {
+        if (items_count == 0) return;
+
+        auto old_size = get_size(true);
+
+        grow_by(items_count, false);
+
+        items().toggle();
+
+        items().write().bind();
+        items().write().upload(
+            items_data + items_offset,
+            old_size,
+            items_count
+        );
+
+        items().toggle();
+    }
+
+    template<class T>
+    void GpuVectorPingPong<T>::debug_download_data()
     {
         if (!enable_debug_download) return;
 
@@ -134,5 +202,38 @@ namespace gl_containers {
         BindAndDownload(items().write());
         BindAndDownload(count());
     }
+    
 
+    template<class T>
+    glm::uint GpuVectorPingPong<T>::get_size(bool download = true)
+    {
+        if (download)
+        {
+            count().bind();
+            count().download();
+        }
+        return count().buffer[index_count()];
+    }
+
+    template<class T>
+    glm::uint GpuVectorPingPong<T>::get_capacity(bool download = true)
+    {
+        if (download)
+        {
+            count().bind();
+            count().download();
+        }
+        return count().buffer[index_capacity()];
+    }
+
+    template<class T>
+    glm::uint GpuVectorPingPong<T>::get_counter(bool download = true)
+    {
+        if (download)
+        {
+            count().bind();
+            count().download();
+        }
+        return count().buffer[index_counter()];
+    }
 } // namespace gl_containers
