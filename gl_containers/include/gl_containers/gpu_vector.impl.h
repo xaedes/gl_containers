@@ -104,5 +104,39 @@ namespace gl_containers {
         BindAndDownload(items());
         BindAndDownload(count());
     }
+    
+    template<class T>
+    glm::uint GpuVector<T>::get_size(bool download = true)
+    {
+        if (download)
+        {
+            count().bind();
+            count().download();
+        }
+        return count().buffer[index_count()];
+    }
+
+    template<class T>
+    glm::uint GpuVector<T>::get_capacity(bool download = true)
+    {
+        if (download)
+        {
+            count().bind();
+            count().download();
+        }
+        return count().buffer[index_capacity()];
+    }
+
+    template<class T>
+    glm::uint GpuVector<T>::get_counter(bool download = true)
+    {
+        if (download)
+        {
+            count().bind();
+            count().download();
+        }
+        return count().buffer[index_counter()];
+    }
+
 
 } // namespace gl_containers

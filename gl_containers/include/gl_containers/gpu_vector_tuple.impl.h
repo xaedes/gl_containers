@@ -39,4 +39,59 @@ namespace gl_containers {
         BindAndDownload(count());
     }
 
+    template<class... Args>
+    void GpuVectorTuple<Args...>::clear()
+    {
+        count().bind();
+        count().download();
+        count().buffer[index_count()] = 0;
+        count().buffer[index_counter()] = 0;
+        count().upload();
+
+    }
+
+    template<class... Args>
+    void GpuVectorTuple<Args...>::reserve(glm::uint capacity)
+    {
+        count().bind();
+        count().download();
+        count().buffer[index_capacity()] = capacity;
+        count().upload();
+
+        reserve_items(capacity);
+    }
+
+    template<class... Args>
+    glm::uint GpuVectorTuple<Args...>::get_size(bool download = true)
+    {
+        if (download)
+        {
+            count().bind();
+            count().download();
+        }
+        return count().buffer[index_count()];
+    }
+
+    template<class... Args>
+    glm::uint GpuVectorTuple<Args...>::get_capacity(bool download = true)
+    {
+        if (download)
+        {
+            count().bind();
+            count().download();
+        }
+        return count().buffer[index_capacity()];
+    }
+
+    template<class... Args>
+    glm::uint GpuVectorTuple<Args...>::get_counter(bool download = true)
+    {
+        if (download)
+        {
+            count().bind();
+            count().download();
+        }
+        return count().buffer[index_counter()];
+    }
+
 } // namespace gl_containers

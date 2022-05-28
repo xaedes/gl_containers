@@ -39,4 +39,46 @@ namespace gl_containers {
         BindAndDownload(count());
     }
 
+    template<class... Args>
+    glm::uint GpuVectorTuplePingPong<Args...>::get_size(bool download = true)
+    {
+        if (download)
+        {
+            count().bind();
+            count().download();
+        }
+        return count().buffer[index_count()];
+    }
+
+    template<class... Args>
+    glm::uint GpuVectorTuplePingPong<Args...>::get_capacity(bool download = true)
+    {
+        if (download)
+        {
+            count().bind();
+            count().download();
+        }
+        return count().buffer[index_capacity()];
+    }
+
+    template<class... Args>
+    glm::uint GpuVectorTuplePingPong<Args...>::get_counter(bool download = true)
+    {
+        if (download)
+        {
+            count().bind();
+            count().download();
+        }
+        return count().buffer[index_counter()];
+    }
+
+    template<class... Args>
+    void GpuVectorTuplePingPong<Args...>::clear()
+    {
+        count().bind();
+        count().download();
+        count().buffer[index_count()] = 0;
+        count().upload();
+    }
+
 } // namespace gl_containers

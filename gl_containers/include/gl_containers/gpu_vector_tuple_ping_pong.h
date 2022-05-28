@@ -24,6 +24,11 @@ namespace gl_containers {
         tuple_type& items() { return m_items; }
         gl_classes::HostDeviceBuffer<glm::uint>&  count() { return m_count; }
 
+        void clear();
+        glm::uint get_size(bool download = true);
+        glm::uint get_capacity(bool download = true);
+        glm::uint get_counter(bool download = true);
+
         static glm::uint index_count()    { return 0; }
         static glm::uint index_capacity() { return 1; }
         static glm::uint index_counter()  { return 2; }

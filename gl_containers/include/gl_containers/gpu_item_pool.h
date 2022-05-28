@@ -32,9 +32,24 @@ namespace gl_containers {
         GpuVectorTuple<value_type, glm::uint>&                          new_items()              { return m_new_items; }
         GpuVectorTuplePingPong<glm::uint, glm::uint>&                   created()                { return m_created; }
         
+        void clear();
         void eraseItems();
         void createItems();
 
+        void insertFromCpu(
+            glm::uint* inserted_ids,
+            glm::uint* inserted_tickets,
+            const value_type* items,
+            const glm::uint* tickets,
+            glm::uint size
+        );
+
+        void eraseItems(
+            const glm::uint* erase_ids,
+            glm::uint size
+        );
+
+        
         void filterOutErasedIds(
             GpuVectorPingPong<glm::uint>& slot_ids
         );
@@ -42,7 +57,16 @@ namespace gl_containers {
         void debugDownloadData();
         bool enable_debug_download = false;
 
+        glm::uint get_size(bool download = true);
+        glm::uint get_capacity(bool download = true);
+
     protected:
+        void clear_set_free_slots();
+        void clear_allocated_bitset();
+        void clear_created();
+        void clear_erase_slot_ids();
+        void clear_new_items();
+
         std::shared_ptr<Programs> m_programs;
 
         gl_classes::HostDeviceBuffer<value_type> m_slots;

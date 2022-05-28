@@ -23,6 +23,13 @@ namespace gl_containers {
         tuple_type& items() { return m_items; }
         gl_classes::HostDeviceBuffer<glm::uint>&  count() { return m_count; }
 
+        void clear();
+        void reserve(glm::uint capacity);
+        
+        glm::uint get_size(bool download = true);
+        glm::uint get_capacity(bool download = true);
+        glm::uint get_counter(bool download = true);
+
         static glm::uint index_count()    { return 0; }
         static glm::uint index_capacity() { return 1; }
         static glm::uint index_counter()  { return 2; }
@@ -59,6 +66,29 @@ namespace gl_containers {
         void setup_items(glm::uint initial_capacity)
         {
             setup_items<0, buffer_type<Args>...>(initial_capacity);
+        }
+
+        template<class TArg> void reserve_items(TArg& items, glm::uint capacity)
+        {
+            items.bind();
+            items.resize(capacity);
+        }
+        
+        template<size_t Idx, class TArg, class... TArgs, std::enable_if_t<(Idx <= tuple_size::value-2), bool> = true>
+        void reserve_items(glm::uint capacity) 
+        { 
+            reserve_items<TArg>(items<Idx>(), capacity);
+            reserve_items<Idx+1, TArgs...>(capacity);
+        }
+        template<size_t Idx, class TArg, std::enable_if_t<(Idx == tuple_size::value-1), bool> = true> 
+        void reserve_items(glm::uint capacity)
+        {
+            reserve_items<TArg>(items<Idx>(), capacity);
+        }
+
+        void reserve_items(glm::uint capacity)
+        {
+            reserve_items<0, buffer_type<Args>...>(capacity);
         }
 
         template<class TArg> void download_items(TArg& items)

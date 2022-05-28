@@ -27,6 +27,10 @@ namespace gl_containers {
         void debugDownloadData();
         bool enable_debug_download = false;
 
+        glm::uint get_size(bool download = true);
+        glm::uint get_capacity(bool download = true);
+        glm::uint get_counter(bool download = true);
+
     protected:
         std::shared_ptr<Programs> m_programs;
 
