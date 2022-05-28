@@ -20,9 +20,9 @@ namespace gl_containers {
 
         void setup(
             const std::shared_ptr<Programs>& programs = nullptr,
-            glm::uint pool_capacity = 1024UL*1024UL*5UL / sizeof(value_type), // 5m
-            glm::uint erase_capacity = 1024UL*1024UL,                         // 4m
-            glm::uint new_items_capacity = 1024UL*1024UL                      // 4m  
+            glm::uint pool_capacity = 1024UL*1024UL*5UL / sizeof(value_type), // 5mitems
+            glm::uint erase_capacity = 1024UL*1024UL,                         // 4mb
+            glm::uint new_items_capacity = 1024UL*1024UL                      // 4mb
         );
 
         gl_classes::HostDeviceBuffer<value_type>&                       slots()                  { return m_slots; }
