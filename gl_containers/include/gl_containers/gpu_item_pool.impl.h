@@ -410,8 +410,14 @@ namespace gl_containers {
     glm::uint GpuItemPool<T>::get_size(bool download)
     {
         auto cap = m_free_slot_ids.get_capacity(download); 
-        auto free = m_free_slot_ids.get_size(false); 
+        auto free = get_free(false); 
         return cap - free;
+    }
+    
+    template<class T>
+    glm::uint GpuItemPool<T>::get_free(bool download)
+    {
+        return m_free_slot_ids.get_size(download); 
     }
     
     template<class T>

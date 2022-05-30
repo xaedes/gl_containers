@@ -58,6 +58,7 @@ namespace gl_containers {
         bool enable_debug_download = false;
 
         glm::uint get_size(bool download = true);
+        glm::uint get_free(bool download = true);
         glm::uint get_capacity(bool download = true);
 
     protected:
