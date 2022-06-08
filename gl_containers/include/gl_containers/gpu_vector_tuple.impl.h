@@ -62,7 +62,7 @@ namespace gl_containers {
     }
 
     template<class... Args>
-    glm::uint GpuVectorTuple<Args...>::get_size(bool download = true)
+    glm::uint GpuVectorTuple<Args...>::get_size(bool download)
     {
         if (download)
         {
@@ -73,7 +73,7 @@ namespace gl_containers {
     }
 
     template<class... Args>
-    glm::uint GpuVectorTuple<Args...>::get_capacity(bool download = true)
+    glm::uint GpuVectorTuple<Args...>::get_capacity(bool download)
     {
         if (download)
         {
@@ -84,7 +84,7 @@ namespace gl_containers {
     }
 
     template<class... Args>
-    glm::uint GpuVectorTuple<Args...>::get_counter(bool download = true)
+    glm::uint GpuVectorTuple<Args...>::get_counter(bool download)
     {
         if (download)
         {

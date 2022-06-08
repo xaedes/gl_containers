@@ -205,7 +205,7 @@ namespace gl_containers {
     
 
     template<class T>
-    glm::uint GpuVectorPingPong<T>::get_size(bool download = true)
+    glm::uint GpuVectorPingPong<T>::get_size(bool download)
     {
         if (download)
         {
@@ -216,7 +216,7 @@ namespace gl_containers {
     }
 
     template<class T>
-    glm::uint GpuVectorPingPong<T>::get_capacity(bool download = true)
+    glm::uint GpuVectorPingPong<T>::get_capacity(bool download)
     {
         if (download)
         {
@@ -227,7 +227,7 @@ namespace gl_containers {
     }
 
     template<class T>
-    glm::uint GpuVectorPingPong<T>::get_counter(bool download = true)
+    glm::uint GpuVectorPingPong<T>::get_counter(bool download)
     {
         if (download)
         {

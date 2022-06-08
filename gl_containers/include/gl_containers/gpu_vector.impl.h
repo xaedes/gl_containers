@@ -106,7 +106,7 @@ namespace gl_containers {
     }
     
     template<class T>
-    glm::uint GpuVector<T>::get_size(bool download = true)
+    glm::uint GpuVector<T>::get_size(bool download)
     {
         if (download)
         {
@@ -117,7 +117,7 @@ namespace gl_containers {
     }
 
     template<class T>
-    glm::uint GpuVector<T>::get_capacity(bool download = true)
+    glm::uint GpuVector<T>::get_capacity(bool download)
     {
         if (download)
         {
@@ -128,7 +128,7 @@ namespace gl_containers {
     }
 
     template<class T>
-    glm::uint GpuVector<T>::get_counter(bool download = true)
+    glm::uint GpuVector<T>::get_counter(bool download)
     {
         if (download)
         {
